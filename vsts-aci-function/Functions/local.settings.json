@@ -2,6 +2,24 @@
     "IsEncrypted": false,
     "Values": {
         "AzureWebJobsStorage": "",
-        "AzureWebJobsDashboard": ""
+        "AzureWebJobsDashboard": "",
+
+        "AZURE_RESOURCE_GROUP_NAME": "MyResourceGroup",
+
+        "AZURE_AGENT_CONTAINER_INSTANCE_NAME": "vsts-agent-container",
+        "AZURE_AGENT_CONTAINER_GROUP_NAME": "VstsAgentContainerGroup",
+        "AZURE_AGENT_IMAGE_REPOSITORY": "/john/my-vsts-agent-image:v1",
+        "AZURE_AGENT_IMAGE_REGISTRY": "packregistry.azurecr.io",
+        "AZURE_AGENT_CONTAINER_MEMORY_SIZE_GB": "2",
+        "AZURE_AGENT_CONTAINER_CPU_CORE_COUNT": "2",
+
+        "AZURE_TENANT_ID": "TenantId",
+        "AZURE_AD_APP_ID": "AzureActiveDirectoryAppId",
+        "AZURE_AD_APP_KEY": "AzureActiveDirectoryAppKey",
+
+        "VSTS_AGENT_NAME": "Azure_VSTS_agent",
+        "VSTS_TOKEN": "VSTSPersonalAccessToken",
+        "VSTS_ACCOUNT": "vstsProjectAccountName",
+        "VSTS_POOL": "Default"
     }
 }

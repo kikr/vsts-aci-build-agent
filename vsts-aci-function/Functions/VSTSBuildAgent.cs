@@ -9,6 +9,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ContainerInstance.Fluent.Models;
 using System.Configuration;
 using System.Collections.Generic;
 
@@ -19,40 +20,41 @@ namespace Functions
         private static IAzure _azure = GetAzure();
 
         [FunctionName("StartVSTSBuildAgent")]
-        public static async Task<HttpResponseMessage> StartVSTSBuildAgenttAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> StartVSTSBuildAgenttAsync([HttpTrigger(AuthorizationLevel.Function, "GET", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-            var resourceGroup = await _azure.ResourceGroups.GetByNameAsync("vsts");
-            var agentName = await GetNameAsync(req, "name");
+            var containerImageFullUrl = $"{ConfigurationManager.AppSettings["AZURE_AGENT_IMAGE_REGISTRY"]}{ConfigurationManager.AppSettings["AZURE_AGENT_IMAGE_REPOSITORY"]}";
+            var resourceGroup = await _azure.ResourceGroups.GetByNameAsync(ConfigurationManager.AppSettings["AZURE_RESOURCE_GROUP_NAME"]);
             var env = new Dictionary<string, string>
             {
-                { "VSTS_AGENT_INPUT_URL", ConfigurationManager.AppSettings["VSTS_AGENT_INPUT_URL"] },
-                { "VSTS_AGENT_INPUT_AUTH", "pat" },
-                { "VSTS_AGENT_INPUT_TOKEN", ConfigurationManager.AppSettings["VSTS_AGENT_INPUT_TOKEN"] },
-                { "VSTS_AGENT_INPUT_POOL", "AzureContainerInstance" },
-                { "VSTS_AGENT_INPUT_AGENT", agentName }
+                { "VSTS_TOKEN", ConfigurationManager.AppSettings["VSTS_TOKEN"] },
+                { "VSTS_POOL", ConfigurationManager.AppSettings["VSTS_POOL"] },
+                { "VSTS_AGENT", ConfigurationManager.AppSettings["VSTS_AGENT_NAME"] },
+                { "VSTS_ACCOUNT", ConfigurationManager.AppSettings["VSTS_ACCOUNT"] }
             };
 
-            var containerGroup = await _azure.ContainerGroups.Define(agentName)
+            var containerGroup = await _azure.ContainerGroups.Define(ConfigurationManager.AppSettings["AZURE_AGENT_CONTAINER_GROUP_NAME"])
                 .WithRegion(resourceGroup.RegionName)
                 .WithExistingResourceGroup(resourceGroup)
                 .WithLinux()
-                .WithPublicImageRegistryOnly()
+                .WithPrivateImageRegistry(ConfigurationManager.AppSettings["AZURE_AGENT_IMAGE_REGISTRY"], ConfigurationManager.AppSettings["AZURE_AD_APP_ID"], ConfigurationManager.AppSettings["AZURE_AD_APP_KEY"])
                 .WithoutVolume()
-                .DefineContainerInstance(agentName)
-                    .WithImage("acanthamoeba/vsts-build-agent")
+                .DefineContainerInstance(ConfigurationManager.AppSettings["AZURE_AGENT_CONTAINER_INSTANCE_NAME"])
+                    .WithImage(containerImageFullUrl)
                     .WithoutPorts()
                     .WithEnvironmentVariables(env)
+                    .WithCpuCoreCount(Convert.ToDouble(ConfigurationManager.AppSettings["AZURE_AGENT_CONTAINER_CPU_CORE_COUNT"]))
+                    .WithMemorySizeInGB(Convert.ToDouble(ConfigurationManager.AppSettings["AZURE_AGENT_CONTAINER_MEMORY_SIZE_GB"]))
                     .Attach()
+                .WithRestartPolicy(ContainerGroupRestartPolicy.Never)
                 .CreateAsync();
 
             return req.CreateResponse(HttpStatusCode.OK, "VSTS agent is running");
         }
 
         [FunctionName("StopVSTSBuildAgent")]
-        public static async Task<HttpResponseMessage> StopVSTSBuildAgenttAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> StopVSTSBuildAgenttAsync([HttpTrigger(AuthorizationLevel.Function, "GET", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-            var agentName = await GetNameAsync(req, "name");
-            await _azure.ContainerGroups.DeleteByResourceGroupAsync("vsts", agentName);
+            await _azure.ContainerGroups.DeleteByResourceGroupAsync(ConfigurationManager.AppSettings["AZURE_RESOURCE_GROUP_NAME"], ConfigurationManager.AppSettings["AZURE_AGENT_CONTAINER_GROUP_NAME"]);
             return req.CreateResponse(HttpStatusCode.OK, "VSTS agent has been removed");
         }
 
@@ -72,11 +74,11 @@ namespace Functions
 
         private static IAzure GetAzure()
         {
-            var tenantId = ConfigurationManager.AppSettings["tenantId"];
+            var tenantId = ConfigurationManager.AppSettings["AZURE_TENANT_ID"];
             var sp = new ServicePrincipalLoginInformation
             {
-                ClientId = ConfigurationManager.AppSettings["clientId"],
-                ClientSecret = ConfigurationManager.AppSettings["clientSecret"]
+                ClientId = ConfigurationManager.AppSettings["AZURE_AD_APP_ID"],
+                ClientSecret = ConfigurationManager.AppSettings["AZURE_AD_APP_KEY"]
             };
             return Azure.Authenticate(new AzureCredentials(sp, tenantId, AzureEnvironment.AzureGlobalCloud)).WithDefaultSubscription();
         }
