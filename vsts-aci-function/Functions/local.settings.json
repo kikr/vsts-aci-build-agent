@@ -9,7 +9,7 @@
         "AZURE_AGENT_CONTAINER_INSTANCE_NAME": "vsts-agent-container",
         "AZURE_AGENT_CONTAINER_GROUP_NAME": "VstsAgentContainerGroup",
         "AZURE_AGENT_IMAGE_REPOSITORY": "/john/my-vsts-agent-image:v1",
-        "AZURE_AGENT_IMAGE_REGISTRY": "packregistry.azurecr.io",
+        "AZURE_AGENT_IMAGE_REGISTRY": "someRegistry.azurecr.io",
         "AZURE_AGENT_CONTAINER_MEMORY_SIZE_GB": "2",
         "AZURE_AGENT_CONTAINER_CPU_CORE_COUNT": "2",
 
