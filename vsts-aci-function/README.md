@@ -29,4 +29,4 @@ az ad sp create-for-rbac -n vsts-aci-function
 * Right-click the `Functions` project
 * Hit `Publish` and select your your function app
 
-> Note! [By default your local.settings.json file is not published](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local#local-settings-file). You have to set seperate configs for publishing, or use publish-command flag to publish your local settings.
+> Note! [By default your local.settings.json file is not published](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local#local-settings-file). You have to set seperate configs for publishing, or use publish-command flag/switch to publish your local settings.
