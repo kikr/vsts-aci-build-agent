@@ -328,5 +328,5 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 
-# MFractors (Xamarin productivity tool) working folder 
+# Settings used locally for Azure Function development
 local.settings.json
