@@ -9,6 +9,7 @@ See [vsts-agent-docker](https://github.com/Microsoft/vsts-agent-docker) for the 
 Instructions how to run the VSTS agent on your computer with nothing but Docker installed. Well these instructions assume that the VSTS agent image resides in private Azure image registry, so you have to install Azure CLI as well.
 
 ### Prerequisites
+Start by installing the following applications:
 
 * Docker CE
 * Azure CLI
@@ -27,11 +28,11 @@ Next we'll start the agent from command line
 
 1. Login to Azure Container Registry
 ```bash
-az acr login -n someRegistry
+az acr login -n someAzureRegistry
 ```
 2. Now fill in the missing information in the below command and execute it
 ```bash
-docker run -e VSTS_TOKEN=<PAT> -e VSTS_AGENT=<Agent Name> -e VSTS_POOL=<Agent Pool Name> -e VSTS_ACCOUNT=<MY VSTS owner account> -it someregistry.azurecr.io/john/my-image
+docker run -e VSTS_TOKEN=<PAT> -e VSTS_AGENT=<Agent Name> -e VSTS_POOL=<Agent Pool Name> -e VSTS_ACCOUNT=<MY VSTS owner account> -it someAzureRegistry.azurecr.io/john/my-image
 ```
 			
 > Notes! In the docker run-command, VSTS_ACCOUNT is actually the project owner's account name and not the agent account's name.
