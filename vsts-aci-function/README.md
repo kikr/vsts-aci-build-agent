@@ -6,7 +6,6 @@ Creates or destroys an Azure Container Instance that runs the VSTS Build Agent
 
 * Dockerfile is in the `vsts-build-agent-from-scratch` folder
 * You'll need to provide AppSettings in your Function App as defined in [local.settings.json](https://github.com/kikr/vsts-aci-build-agent/blob/master/vsts-aci-function/Functions/local.settings.json)
-* local.settings.json is meant for local development. Production has its own settings, but nothing but setting values are different.
 * Creates Container Groups in a Resource Group defined in AppSettings.
 * Places VSTS agents in a pool defined in your AppSettings.
 * Uses a Service Principal as the other Functions to interact with your Azure Subscription
