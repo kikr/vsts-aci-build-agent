@@ -32,7 +32,7 @@ az acr login -n someAzureRegistry
 ```
 2. Now fill in the missing information in the below command and execute it
 ```bash
-docker run -e VSTS_TOKEN=<PAT> -e VSTS_AGENT=<Agent Name> -e VSTS_POOL=<Agent Pool Name> -e VSTS_ACCOUNT=<MY VSTS owner account> -it someAzureRegistry.azurecr.io/john/my-image
+docker run -e VSTS_TOKEN=<PAT> -e VSTS_AGENT=<Agent Name> -e VSTS_POOL="<Agent Pool Name>" -e VSTS_ACCOUNT=<MY VSTS owner account> -it someAzureRegistry.azurecr.io/john/my-image
 ```
 			
 > Notes! In the docker run-command, VSTS_ACCOUNT is actually the project owner's account name and not the agent account's name.
